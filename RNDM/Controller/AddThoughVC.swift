@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 
 class AddThoughVC: UIViewController, UITextViewDelegate {
-
+    
     
     //Outlets
     @IBOutlet weak var categorySegment: UISegmentedControl!
@@ -20,7 +20,8 @@ class AddThoughVC: UIViewController, UITextViewDelegate {
     
     // Variables
     
-    private var selectedCategory = "funny"
+    private var selectedCategory = ThoughtCategory.funny.rawValue
+    
     
     
     
@@ -32,7 +33,7 @@ class AddThoughVC: UIViewController, UITextViewDelegate {
         thoughtTxt.text = "My random thought..."
         thoughtTxt.textColor = UIColor.lightGray
         thoughtTxt.delegate = self
-
+        
         // Do any additional setup after loading the view.
     }
     
@@ -42,9 +43,29 @@ class AddThoughVC: UIViewController, UITextViewDelegate {
     }
     
     @IBAction func categoryChanged(_ sender: Any) {
+        switch categorySegment.selectedSegmentIndex {
+        case 0:
+            selectedCategory = ThoughtCategory.funny.rawValue
+        case 1:
+            selectedCategory = ThoughtCategory.serious.rawValue
+        default:
+            selectedCategory = ThoughtCategory.crazy.rawValue
+
+        }
     }
     @IBAction func postBtnTapped(_ sender: Any) {
-        Firestore.firestore().collection("thoughts").addDocument(data: ["" : ""]) { (err) in
+        guard let username = userNameTxt.text else { return }
+        Firestore.firestore().collection(THOUGHTS_REF).addDocument(data: [
+            CATEGORY : selectedCategory,
+            NUM_COMMENTS : 0,
+            NUM_LIKES : 0,
+            THOUGHT_TXT : thoughtTxt.text,
+            TIMESTAMP : FieldValue.serverTimestamp(),
+            USERNAME : username
+            
+            
+            ])
+        { (err) in
             if let err = err {
                 debugPrint("Error adding document: \(err)")
             } else {
@@ -53,5 +74,5 @@ class AddThoughVC: UIViewController, UITextViewDelegate {
         }
     }
     
-
+    
 }
