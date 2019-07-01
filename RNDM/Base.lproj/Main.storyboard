@@ -38,7 +38,7 @@
                                 <rect key="frame" x="0.0" y="128" width="414" height="608"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="122" id="JTU-PE-7WB">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="thoughtCell" rowHeight="122" id="JTU-PE-7WB" customClass="ThoughtCell" customModule="RNDM" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="122"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="JTU-PE-7WB" id="HDF-Dj-QDC">
@@ -82,7 +82,7 @@
                                                     </subviews>
                                                 </stackView>
                                             </subviews>
-                                            <color key="backgroundColor" red="0.0" green="0.98106676339999999" blue="0.57369142770000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstItem="SCm-N8-BJY" firstAttribute="top" secondItem="Qkm-dq-nzt" secondAttribute="bottom" constant="4" id="6yR-BU-IZb"/>
                                                 <constraint firstItem="D9O-xm-22s" firstAttribute="leading" secondItem="HDF-Dj-QDC" secondAttribute="leading" constant="4" id="9n6-cL-oBu"/>
@@ -96,6 +96,13 @@
                                                 <constraint firstAttribute="trailing" secondItem="SCm-N8-BJY" secondAttribute="trailing" id="yjY-Tl-M3w"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="likesImg" destination="d10-Zn-Q7c" id="x1v-wH-8vb"/>
+                                            <outlet property="likesNumLbl" destination="AQn-3x-ffJ" id="vt7-0I-Xt7"/>
+                                            <outlet property="thoughtTxtLbl" destination="Qkm-dq-nzt" id="6qO-l5-RyF"/>
+                                            <outlet property="timestampLbl" destination="NTF-rJ-ylY" id="zWK-a8-8Rl"/>
+                                            <outlet property="usernameLbl" destination="D9O-xm-22s" id="Hrt-6A-Y1R"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -119,6 +126,10 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="segmentControl" destination="VEO-rB-QOd" id="mdL-xi-wMw"/>
+                        <outlet property="tableView" destination="gCN-74-fNK" id="0I6-oo-swc"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
