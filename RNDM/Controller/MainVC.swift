@@ -38,6 +38,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private var thoughts = [Thought]()
     private var thoughtsCollectionRef: CollectionReference!
     private var thoughtsListener : ListenerRegistration!
+    private var selectedCategory = ThoughtCategory.funny.rawValue
     
 
     override func viewDidLoad() {
@@ -51,9 +52,29 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         thoughtsCollectionRef = Firestore.firestore().collection(THOUGHTS_REF)
     }
     
+    @IBAction func categoryChanged(_ sender: Any) {
+        switch segmentControl.selectedSegmentIndex {
+        case 0:
+            selectedCategory = ThoughtCategory.funny.rawValue
+        case 1:
+            selectedCategory = ThoughtCategory.serious.rawValue
+        case 2:
+            selectedCategory = ThoughtCategory.crazy.rawValue
+        default:
+            selectedCategory = ThoughtCategory.crazy.rawValue
+        }
+        thoughtsListener.remove()
+        setListener()
+    }
+    
+    
     override func viewWillAppear(_ animated: Bool) {
-        
-        thoughtsListener = thoughtsCollectionRef.addSnapshotListener { (snapshot, error) in
+        setListener()
+
+    }
+    
+    func setListener() {
+        thoughtsListener = thoughtsCollectionRef.whereField(CATEGORY, isEqualTo: selectedCategory).addSnapshotListener { (snapshot, error) in
             if let err = error {
                 debugPrint("ERROR: \(error)")
             } else {
@@ -77,9 +98,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        thoughtsListener.remove()
-    }
+    
+//    override func viewWillDisappear(_ animated: Bool) {
+//        thoughtsListener.remove()
+//    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return thoughts.count
