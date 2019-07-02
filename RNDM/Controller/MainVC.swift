@@ -40,6 +40,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private var thoughtsListener : ListenerRegistration!
     private var selectedCategory = ThoughtCategory.funny.rawValue
     
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,7 +75,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func setListener() {
-        thoughtsListener = thoughtsCollectionRef.whereField(CATEGORY, isEqualTo: selectedCategory).addSnapshotListener { (snapshot, error) in
+        thoughtsListener = thoughtsCollectionRef
+            .whereField(CATEGORY, isEqualTo: selectedCategory)
+            .order(by: TIMESTAMP, descending: true)
+            .addSnapshotListener { (snapshot, error) in
             if let err = error {
                 debugPrint("ERROR: \(error)")
             } else {
@@ -83,13 +87,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 for document in snap.documents {
                     let data = document.data()
                     let username = data[USERNAME] as? String ?? "Anonymous"
-                    let timestamp = data[TIMESTAMP] as? Date ?? Date()
+//                    let timestamp = data[TIMESTAMP] as? Date ?? Date()
+                    let timestamp = data[TIMESTAMP] as? Timestamp ?? Timestamp.init(date: Date())
                     let thoughtTxt = data[THOUGHT_TXT] as? String ?? ""
                     let numLikes = data[NUM_LIKES] as? Int ?? 0
                     let numComments = data[NUM_COMMENTS] as? Int ?? 0
                     let documentId = document.documentID
-                    
-                    let newThought = Thought(username: username, timestamp: timestamp, thoughtTxt: thoughtTxt, numLikes: numLikes, numComments: numComments, documentId: documentId)
+
+                    let newThought = Thought(userName: username, timestamp: timestamp, thoughtText: thoughtTxt, numComments: numLikes, numLikes: numComments, documentId: documentId)
+//                    let newThought = Thought(username: username, timestamp: timestamp, thoughtTxt: thoughtTxt, numLikes: numLikes, numComments: numComments, documentId: documentId)
                     
                     self.thoughts.append(newThought)
                 }
@@ -99,9 +105,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     
-//    override func viewWillDisappear(_ animated: Bool) {
-//        thoughtsListener.remove()
-//    }
+    override func viewWillDisappear(_ animated: Bool) {
+        thoughtsListener.remove()
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return thoughts.count
