@@ -62,7 +62,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         case 2:
             selectedCategory = ThoughtCategory.crazy.rawValue
         default:
-            selectedCategory = ThoughtCategory.crazy.rawValue
+            selectedCategory = ThoughtCategory.popular.rawValue
         }
         thoughtsListener.remove()
         setListener()
@@ -78,7 +78,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         if selectedCategory == ThoughtCategory.popular.rawValue {
             thoughtsListener = thoughtsCollectionRef
-                .whereField(CATEGORY, isEqualTo: selectedCategory)
                 .order(by: NUM_LIKES, descending: true)
                 .addSnapshotListener { (snapshot, error) in
                     if let err = error {
@@ -96,7 +95,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                             let numComments = data[NUM_COMMENTS] as? Int ?? 0
                             let documentId = document.documentID
                             
-                            let newThought = Thought(userName: username, timestamp: timestamp, thoughtText: thoughtTxt, numComments: numLikes, numLikes: numComments, documentId: documentId)
+                            let newThought = Thought(userName: username, timestamp: timestamp, thoughtText: thoughtTxt, numComments: numComments, numLikes: numLikes, documentId: documentId)
                             //                    let newThought = Thought(username: username, timestamp: timestamp, thoughtTxt: thoughtTxt, numLikes: numLikes, numComments: numComments, documentId: documentId)
                             
                             self.thoughts.append(newThought)
@@ -123,10 +122,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                             let numLikes = data[NUM_LIKES] as? Int ?? 0
                             let numComments = data[NUM_COMMENTS] as? Int ?? 0
                             let documentId = document.documentID
-                            
-                            let newThought = Thought(userName: username, timestamp: timestamp, thoughtText: thoughtTxt, numComments: numLikes, numLikes: numComments, documentId: documentId)
+
+                            let newThought = Thought(userName: username, timestamp: timestamp, thoughtText: thoughtTxt, numComments: numComments, numLikes: numLikes, documentId: documentId)
                             //                    let newThought = Thought(username: username, timestamp: timestamp, thoughtTxt: thoughtTxt, numLikes: numLikes, numComments: numComments, documentId: documentId)
-                            
+
                             self.thoughts.append(newThought)
                         }
                         self.tableView.reloadData()
