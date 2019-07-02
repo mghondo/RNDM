@@ -37,6 +37,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     // Variables
     private var thoughts = [Thought]()
     private var thoughtsCollectionRef: CollectionReference!
+    private var thoughtsListener : ListenerRegistration!
     
 
     override func viewDidLoad() {
@@ -51,12 +52,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        thoughtsCollectionRef.getDocuments { (snapshot, error) in
+        
+        thoughtsListener = thoughtsCollectionRef.addSnapshotListener { (snapshot, error) in
             if let err = error {
                 debugPrint("ERROR: \(error)")
             } else {
+                self.thoughts.removeAll()
                 guard let snap = snapshot else { return }
-//                print("SUCCESS!!!!! LOOK: \(snapshot?.documents)")
                 for document in snap.documents {
                     let data = document.data()
                     let username = data[USERNAME] as? String ?? "Anonymous"
@@ -73,6 +75,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 self.tableView.reloadData()
             }
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        thoughtsListener.remove()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
