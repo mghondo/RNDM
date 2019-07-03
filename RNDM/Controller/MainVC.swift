@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import FirebaseAuth
 
 //enum ThoughtCategory : String {
 //    case serious : "serious",
@@ -39,6 +40,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private var thoughtsCollectionRef: CollectionReference!
     private var thoughtsListener : ListenerRegistration!
     private var selectedCategory = ThoughtCategory.funny.rawValue
+    private var handle: AuthStateDidChangeListenerHandle?
+    
     
     
     
@@ -51,6 +54,24 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         tableView.rowHeight = UITableView.automaticDimension
         
         thoughtsCollectionRef = Firestore.firestore().collection(THOUGHTS_REF)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        handle = Auth.auth().addStateDidChangeListener({ (auth, user) in
+            if user == nil {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let loginVC = storyboard.instantiateViewController(withIdentifier: "loginVC")
+                self.present(loginVC, animated: true, completion: nil)
+            } else {
+                self.setListener()
+            }
+        })
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        if thoughtsListener != nil {
+            thoughtsListener.remove()
+        }
     }
     
     @IBAction func categoryChanged(_ sender: Any) {
@@ -68,11 +89,16 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         setListener()
     }
     
-    
-    override func viewWillAppear(_ animated: Bool) {
-        setListener()
-        
+    @IBAction func logoutTapped(_ sender: Any) {
+        let firebaseAuth = Auth.auth()
+        do {
+            try firebaseAuth.signOut()
+        } catch let signoutError as NSError {
+            debugPrint("Error signing out: \(signoutError)")
+        }
     }
+    
+
     
     func setListener() {
         
@@ -105,9 +131,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     
-    override func viewWillDisappear(_ animated: Bool) {
-        thoughtsListener.remove()
-    }
+ 
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return thoughts.count
